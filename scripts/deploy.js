@@ -3,6 +3,7 @@
 //
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
+const { upgrades } = require('hardhat');
 const hre = require('hardhat');
 
 async function main() {
@@ -16,7 +17,7 @@ async function main() {
   const owner = await ethers.getSigner();
   console.log('deploying with:', owner.address);
   // Deploy the Artist contract (implementation)
-  const Artist = await ethers.getContractFactory('Artist');
+  const Artist = await ethers.getContractFactory('ArtistV2');
   const artist = await Artist.deploy();
   // Wait until the contract is deployed
   await artist.deployed();
@@ -28,7 +29,7 @@ async function main() {
   console.log('Beacon:', beacon.address);
 
   // Deploy the artist creator contract (implementation and proxy)
-  const ArtistCreator = await ethers.getContractFactory('ArtistCreator');
+  const ArtistCreator = await ethers.getContractFactory('ArtistCreatorV2');
   const artistCreatorProxy = await upgrades.deployProxy(
     ArtistCreator,
     [beacon.address],
@@ -40,10 +41,16 @@ async function main() {
   await artistCreatorProxy.deployed();
   console.log('ArtistCreator Proxy:', artistCreatorProxy.address);
 
+  const artistCreatorImp = await upgrades.erc1967.getImplementationAddress(
+    artistCreatorProxy.address
+  );
+
+  console.log('ArtistCreator Implementation:', artistCreatorImp);
+
   // Create a new ArtistProxy contract through the ArtistCreatorProxy contract
   const createArtistTx = await artistCreatorProxy.createArtist(
-    'Rick',
-    'RSS',
+    'Graph Test',
+    'GT1',
     'https://ipfs.moralis.io:2053/ipfs/'
   );
   // Wait until the transaction is mined

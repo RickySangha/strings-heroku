@@ -35,14 +35,19 @@ export default {
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
-  modules: [],
-  // server: {
-  //   // host: "0",
-  //   https: {
-  //     key: fs.readFileSync(path.resolve(__dirname, "localhost.key")),
-  //     cert: fs.readFileSync(path.resolve(__dirname, "localhost.crt")),
-  //   },
-  // },
+  modules: ["@nuxtjs/apollo"],
+  server: {
+    port: process.env.PORT || 3000,
+  },
+
+  apollo: {
+    clientConfigs: {
+      default: {
+        httpEndpoint:
+          "https://api.studio.thegraph.com/query/21303/stringsrinkeby/0.9.7",
+      },
+    },
+  },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {

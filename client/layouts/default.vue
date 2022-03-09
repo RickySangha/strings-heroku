@@ -22,52 +22,106 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title v-text="title" />
       <v-spacer />
-      <v-btn @click.stop="login()" color="white" class="black--text">
-        {{ user.user ? user.ethAddress : "Connect Wallet" }}
-      </v-btn>
       <v-btn
-        v-if="user"
-        @click.stop="logout()"
+        v-if="!user.ethAddress"
+        @click.stop="login()"
         color="white"
         class="black--text"
       >
-        Logout
+        Connect Wallet
       </v-btn>
+      <!-- <v-btn v-else @click.stop="logout()" color="white" class="black--text">
+        {{ user.ethAddress.slice(0, 9) }}..
+      </v-btn> -->
+      <v-menu v-else offset-y>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn color="white" class="black--text" v-bind="attrs" v-on="on">
+            {{ user.ethAddress.slice(0, 9) }}..
+            <v-icon dark right> mdi-chevron-down </v-icon>
+          </v-btn>
+        </template>
+
+        <v-list dense>
+          <v-list-item-group color="primary">
+            <v-list-item
+              v-for="(dropDownItem, index) in dropDownItems"
+              :key="index"
+              :to="dropDownItem.to"
+              router
+              exact
+            >
+              <v-list-item-content>
+                <v-list-item-title
+                  v-text="dropDownItem.title"
+                ></v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-content>
+                <v-list-item-title
+                  @click="logout"
+                  class="red--text"
+                  v-text="'LOGOUT'"
+                ></v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-item-group>
+        </v-list>
+      </v-menu>
     </v-app-bar>
     <v-main>
       <v-container>
-        <Nuxt />
+        <Nuxt v-if="!loading" />
+        <v-overlay :value="loading">
+          <v-progress-circular indeterminate size="64"></v-progress-circular>
+        </v-overlay>
       </v-container>
+      <!-- <v-footer :absolute="!fixed">
+        <span>&copy; {{ new Date().getFullYear() }}</span>
+      </v-footer> -->
     </v-main>
     <v-navigation-drawer v-model="rightDrawer" temporary fixed>
     </v-navigation-drawer>
-    <v-footer :absolute="!fixed" app>
-      <span>&copy; {{ new Date().getFullYear() }}</span>
-    </v-footer>
   </v-app>
 </template>
+
 <script>
 export default {
   data() {
     return {
       drawer: false,
-      fixed: false,
+      fixed: true,
+      loading: true,
       items: [
         {
           icon: "mdi-apps",
           title: "Create Edition",
-          to: "/",
+          to: "/create",
+        },
+        {
+          icon: "mdi-apps",
+          title: "All Artists",
+          to: "/artists",
         },
         {
           icon: "mdi-chart-bubble",
-          title: "Mint Edition",
-          to: "/mint",
+          title: "All Songs",
+          to: "/songs",
         },
         {
           icon: "mdi-chart-bubble",
-          title: "My Minted Editions",
-          to: "/edition",
+          title: "My NFTs",
+          to: "/myNFTs",
         },
+        {
+          icon: "mdi-chart-bubble",
+          title: "Join as Artist ",
+          to: "/join",
+        },
+      ],
+      dropDownItems: [
+        { title: "Dashboard", to: "/dashboard" },
+        { title: "Profile", to: "/profile" },
       ],
       miniVariant: false,
       rightDrawer: false,
@@ -86,6 +140,10 @@ export default {
     async logout() {
       await this.$store.dispatch("auth/logout");
     },
+  },
+  async mounted() {
+    await this.login();
+    this.loading = false;
   },
 };
 </script>

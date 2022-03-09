@@ -2,7 +2,7 @@
   <v-container fluid>
     <v-row dense>
       <v-col v-for="nft in nfts" :key="nft.tokenId">
-        <NFTCard :nft="nft" />
+        <EditionCard :nft="nft" />
       </v-col>
     </v-row>
   </v-container>
@@ -10,6 +10,7 @@
 
 <script>
 import Moralis from "moralis";
+import { ethers } from "ethers";
 
 export default {
   data() {
@@ -17,11 +18,52 @@ export default {
       nfts: [],
     };
   },
+  methods: {
+    async getEditions() {
+      const query = `
+  query($artistId: BigInt) {
+    editions(where:{artistId:$artistId}) {
+      id
+      artistId
+      name
+      symbol
+      artistAddress
+      editions{
+        editionId
+        price
+        quantity
+        numSold
+      }
+    }
+  }
+`;
+      const client = this.$apollo.getClient();
+      let res = await this.$apollo.query({
+        query: gql(query),
+        variables: { artistId: this.$route.params.artistId },
+      });
+      this.artist = res.data.artists[0];
+    },
+  },
   async mounted() {
-    this.nfts = await Moralis.Cloud.run("usersNfts", {
-      tokenAddress: "0x2ef0399c5e2a38262a167bafed51715e69cf2c95",
-    });
-    console.log(this.nfts);
+    console.log("Query:");
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      console.log(provider);
+      // this.getEditions();
+      // const res = await Moralis.Cloud.run("usersNfts", {
+      //   tokenAddress: "0x8746d80b767b86b4314e19b19783c5f60a5733e3",
+      // });
+
+      // res.forEach((nft) => {
+      //   this.nfts.push(nft);
+      //   console.log(nft.tokenUri);
+      // });
+      // // this.nfts = res;
+      // // console.log(res);
+    } catch (e) {
+      console.log(e.message);
+    }
   },
   methods: {},
 };

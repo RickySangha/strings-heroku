@@ -26,7 +26,6 @@ contract ArtistCreator is Initializable, UUPSUpgradeable, OwnableUpgradeable {
   address public beaconAddress;
   // registry of created contracts
   address[] public artistContracts;
-  address public artistAdd;
 
   // ============ Events ============
 
@@ -75,7 +74,7 @@ contract ArtistCreator is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     require(msg.sender == admin, 'Not authorized');
     // require((getSigner(signature) == admin), 'invalid authorization signature');
 
-    // this will create a new BeaconProxy and then delgatecall the implementation contracts initialize function. delegatecall expexts the function signature as its paramenter, hence why we use abi.encodeWithSelector(bytes4, arg);
+    // this will create a new BeaconProxy and then delgatecall the implementation contracts initialize function. delegatecall expexts the function signature as its paramenter, hence why we use abi.encodeWithSelector(bytes4, args);
     BeaconProxy proxy = new BeaconProxy(
       beaconAddress,
       abi.encodeWithSelector(
@@ -94,8 +93,6 @@ contract ArtistCreator is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     emit CreatedArtist(atArtistId.current(), _name, _symbol, address(proxy));
 
     atArtistId.increment();
-
-    artistAdd = address(proxy);
 
     return address(proxy);
   }

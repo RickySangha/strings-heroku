@@ -41,7 +41,7 @@ contract Artist is ERC721Upgradeable, IERC2981Upgradeable, OwnableUpgradeable {
     uint32 startTime;
     // end timestamp of auction (in seconds since unix epoch)
     uint32 endTime;
-    string hash;
+    string uriHash;
     // bool isComposable;
     // The child editions this edition is composed of (max 5)
     //TODO: anyway we can make this more efficient. Eg save ipfs hashes in bytes32 instead of strings
@@ -75,7 +75,7 @@ contract Artist is ERC721Upgradeable, IERC2981Upgradeable, OwnableUpgradeable {
     uint32 royaltyBPS,
     uint32 startTime,
     uint32 endTime,
-    string uri
+    string ipfsHash
   );
 
   event EditionPurchased(
@@ -121,7 +121,7 @@ contract Artist is ERC721Upgradeable, IERC2981Upgradeable, OwnableUpgradeable {
     uint32 _royaltyBPS,
     uint32 _startTime,
     uint32 _endTime,
-    string memory _hash
+    string memory _uriHash
   ) external onlyOwner {
     editions[atEditionId.current()] = Edition({
       fundingRecipient: payable(msg.sender),
@@ -131,7 +131,7 @@ contract Artist is ERC721Upgradeable, IERC2981Upgradeable, OwnableUpgradeable {
       royaltyBPS: _royaltyBPS,
       startTime: _startTime,
       endTime: _endTime,
-      hash: _hash
+      uriHash: _uriHash
       // isComposable: _isComposable
       // composedOf: Composition(),
       // numberComposedOf: 0
@@ -145,7 +145,7 @@ contract Artist is ERC721Upgradeable, IERC2981Upgradeable, OwnableUpgradeable {
       _royaltyBPS,
       _startTime,
       _endTime,
-      _hash
+      _uriHash
     );
 
     atEditionId.increment();
@@ -181,12 +181,12 @@ contract Artist is ERC721Upgradeable, IERC2981Upgradeable, OwnableUpgradeable {
     // Don't allow purchases before the start time
     require(
       editions[_editionId].startTime < block.timestamp,
-      "Auction hasn't started"
+      "Mint hasn't started"
     );
     // Don't allow purchases after the end time
     require(
       editions[_editionId].endTime > block.timestamp,
-      'Auction has ended'
+      'Mint has ended'
     );
 
     // Mint a new token for the sender, using the `tokenId`.
@@ -257,7 +257,7 @@ contract Artist is ERC721Upgradeable, IERC2981Upgradeable, OwnableUpgradeable {
     //     )
     //   );
 
-    return string(abi.encodePacked(baseURI, editions[_tokenId].hash));
+    return string(abi.encodePacked(baseURI, editions[_tokenId].uriHash));
   }
 
   // Returns e.g. https://sound.xyz/api/metadata/[artistId]/storefront
