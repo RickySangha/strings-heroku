@@ -37,7 +37,6 @@ export default {
     }
   }
 `;
-      const client = this.$apollo.getClient();
       let res = await this.$apollo.query({
         query: gql(query),
         variables: { artistId: this.$route.params.artistId },

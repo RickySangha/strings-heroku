@@ -12,38 +12,52 @@
 <script>
 import gql from "graphql-tag";
 export default {
-  apollo: {
-    editions: gql`
-      query {
-        editions {
-          artist {
-            name
-            symbol
-            artistId
-          }
-          editionId
-          price
-          quantity
-          numSold
-          uriHash
-          imageHash
-          musicHash
-          startTime
-          endTime
-          createdAtTimestamp
-        }
-      }
-    `,
+  data() {
+    return {
+      editions: [],
+      loading: false,
+    };
   },
-  // computed: {
-  //   // artists() {
-  //   //   return this.$store.getters["artists/getLoadedArtists"];
-  //   // },
-  // },
-  // methods: {},
-  // async mounted() {
-  //   await this.$store.dispatch("artists/setLoadedArtists");
-  // },
+  methods: {
+    async getEditions() {
+      try {
+        const query = gql`
+          query {
+            editions {
+              artist {
+                name
+                symbol
+                artistId
+              }
+              editionId
+              price
+              quantity
+              numSold
+              uriHash
+              imageHash
+              musicHash
+              startTime
+              endTime
+              createdAtTimestamp
+            }
+          }
+        `;
+        // const client = this.$apollo.getClient();
+        let res = await this.$apollo.query({
+          query: query,
+        });
+
+        this.editions = res.data.editions;
+
+        this.loading = false;
+      } catch (e) {
+        console.log(e.message);
+      }
+    },
+  },
+  mounted() {
+    this.getEditions();
+  },
 };
 </script>
 

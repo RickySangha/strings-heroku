@@ -88,7 +88,7 @@ export default {
 
         await buyEditionTx.wait();
 
-        this.$router.push("/myeditions");
+        this.$router.push("/myNFTs");
       } catch (e) {
         if (e.error) {
           alert(e.error.message);
@@ -100,37 +100,37 @@ export default {
     },
     async getEdition() {
       try {
-        const query = `
-  query($artistId: BigInt, $editionId: BigInt) {
-        artists(where:{artistId:$artistId}) {
-          id
-          artistId
-          name
-          symbol
-          artistAddress
-          editions(where:{editionId:$editionId}){
-            editionId
-            price
-            quantity
-            numSold
-            uriHash
-            imageHash
-            musicHash
-            createdAtTimestamp
-            tokens{
+        const query = gql`
+          query ($artistId: BigInt, $editionId: BigInt) {
+            artists(where: { artistId: $artistId }) {
               id
-              tokenId
-              owner{
-                id
+              artistId
+              name
+              symbol
+              artistAddress
+              editions(where: { editionId: $editionId }) {
+                editionId
+                price
+                quantity
+                numSold
+                uriHash
+                imageHash
+                musicHash
+                createdAtTimestamp
+                tokens {
+                  id
+                  tokenId
+                  owner {
+                    id
+                  }
+                }
               }
             }
-            }
-        }
-  }
-`;
+          }
+        `;
         // const client = this.$apollo.getClient();
         let res = await this.$apollo.query({
-          query: gql(query),
+          query: query,
           variables: {
             artistId: this.$route.params.artistId,
             editionId: this.$route.params.editionId,

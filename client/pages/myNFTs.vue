@@ -30,29 +30,29 @@ export default {
   methods: {
     async getTokens() {
       try {
-        const query = `
-          query($userId: ID) {
-            user(id:$userId) {
-              tokens{
+        const query = gql`
+          query ($userId: ID) {
+            user(id: $userId) {
+              tokens {
                 tokenId
                 mintedAtTimestamp
-                edition{
+                edition {
                   editionId
                   uriHash
                   imageHash
                   musicHash
                 }
-                owner{
+                owner {
                   id
                 }
               }
             }
-          }`;
+          }
+        `;
         let res = await this.$apollo.query({
-          query: gql(query),
+          query: query,
           variables: { userId: this.user.ethAddress },
         });
-        console.log("res", res.data);
         this.tokens = res.data.user.tokens;
         this.loading = false;
       } catch (e) {
@@ -60,7 +60,7 @@ export default {
       }
     },
   },
-  created() {
+  mounted() {
     this.getTokens();
   },
 };

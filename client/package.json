@@ -19,7 +19,6 @@
     "vuetify": "^2.5.5"
   },
   "devDependencies": {
-    "@nuxtjs/vuetify": "^1.12.1",
-    "express": "^4.17.2"
+    "@nuxtjs/vuetify": "^1.12.1"
   }
 }

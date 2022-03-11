@@ -26,23 +26,21 @@ export const actions = {
           signingMessage: "Log in to Strings",
         });
       }
-      console.log("logged in user:", user);
-      console.log(user.get("ethAddress"));
       let address = user.get("ethAddress");
 
       const query = `
-  query($userId: ID) {
-    user(id:$userId) {
-      artist{
-        artistId
-        artistAddress
-      }
-      tokens{
-        tokenId
-      }
-    }
-  }
-`;
+        query($userId: ID) {
+          user(id:$userId) {
+            artist{
+              artistId
+              artistAddress
+            }
+            tokens{
+              tokenId
+            }
+          }
+        }
+      `;
       const client = this.app.apolloProvider.defaultClient;
       let res = await client.query({
         query: gql(query),
@@ -53,9 +51,18 @@ export const actions = {
         artistAddress = res.data.user.artist.artistAddress;
       }
 
-      console.log("artist address:", artistAddress);
-
       commit("setUser", { user, address, artistAddress });
+    } catch (e) {
+      console.log(e.message);
+    }
+  },
+
+  async checkLoggedIn({ dispatch }) {
+    try {
+      let user = Moralis.User.current();
+      if (user) {
+        dispatch("login");
+      }
     } catch (e) {
       console.log(e.message);
     }

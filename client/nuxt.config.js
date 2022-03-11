@@ -44,7 +44,7 @@ export default {
     clientConfigs: {
       default: {
         httpEndpoint:
-          "https://api.studio.thegraph.com/query/21303/stringsrinkeby/0.9.7",
+          "https://api.studio.thegraph.com/query/21303/stringsrinkeby/0.9.8.3",
       },
     },
   },

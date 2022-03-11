@@ -142,6 +142,7 @@ export default {
     },
   },
   async mounted() {
+    await this.$store.dispatch("auth/checkLoggedIn");
     await this.login();
     this.loading = false;
   },
